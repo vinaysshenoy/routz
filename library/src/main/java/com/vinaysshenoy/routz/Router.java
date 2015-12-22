@@ -175,8 +175,8 @@ public class Router {
             final Screen screen = mScreenStack.peek();
 
             hideCurrentTopScreen();
-            mScreenStack.pop();
             screen.onPopped();
+            mScreenStack.pop();
             if (display) {
                 displayCurrentTopScreen();
             }
@@ -211,9 +211,9 @@ public class Router {
             final Screen screen = mScreenStack.peek();
 
             final View contentView = screen.getContentView();
+            screen.onHidden();
             screen.clearView();
             mContainer.removeView(contentView);
-            screen.onHidden();
         }
     }
 
