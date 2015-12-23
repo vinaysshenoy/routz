@@ -107,17 +107,16 @@ public class Router {
 
     public void onStart() {
 
-        //TODO: Display the top of the stack
+        displayCurrentTopScreen();
     }
 
     public void onStop() {
-
-        //TODO: Hide the top of the stack
+        hideCurrentTopScreen();
     }
 
     public void onDestroy() {
 
-        //TODO: Clear the complete stack
+        mScreenStack.clear();
     }
 
     /**
