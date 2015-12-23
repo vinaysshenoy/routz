@@ -34,7 +34,7 @@ public class Screen2 extends Screen {
         contentView.findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRouter().goTo(Routes.SCREEN_3, null);
+                getRouter().load(Routes.SCREEN_3, null);
             }
         });
         contentView.findViewById(R.id.btn_prev).setOnClickListener(new View.OnClickListener() {

@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 },
                 savedInstanceState);
 
-        mRouter.goTo(Routes.SCREEN_1);
+        mRouter.load(Routes.SCREEN_1);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(mRouter.canGoBack()) {
+        if(mRouter.getBackstackCount() > 1) {
             mRouter.goBack();
         } else {
             super.onBackPressed();

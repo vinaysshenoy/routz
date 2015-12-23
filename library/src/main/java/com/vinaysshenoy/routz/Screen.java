@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * //TODO: Add a state variable that indicates the current state of the Screen
  * Created by vinaysshenoy on 21/12/15.
  */
 public abstract class Screen {
@@ -20,6 +21,8 @@ public abstract class Screen {
 
     @Nullable
     private Bundle mParams;
+
+    private String mRoute;
 
     public Screen(@Nullable Bundle params) {
         this.mParams = params;
@@ -51,6 +54,14 @@ public abstract class Screen {
 
     /* package */ void clearView() {
         mContentView = null;
+    }
+
+    /* package */ void setRoute(@NonNull String route) {
+        mRoute = route;
+    }
+
+    public String getRoute() {
+        return mRoute;
     }
 
     public View getContentView() {
@@ -88,6 +99,10 @@ public abstract class Screen {
     @Nullable
     public Bundle getParams() {
         return mParams;
+    }
+
+    public int getId() {
+        return mId;
     }
 
 
