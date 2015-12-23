@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.vinaysshenoy.routz.R;
 import com.vinaysshenoy.routz.Routes;
@@ -43,6 +44,7 @@ public class Screen4 extends Screen {
                 getRouter().load(Routes.SCREEN_5);
             }
         });
+        Toast.makeText(contentView.getContext(), "Stack Count: " + getRouter().getBackstackCount(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

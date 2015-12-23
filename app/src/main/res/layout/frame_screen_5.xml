@@ -21,4 +21,18 @@
         android:layout_marginTop="16dp"
         android:text="Previous"/>
 
+    <Button
+        android:id="@+id/btn_screen_1_reorder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Load Screen 1 Reorder"/>
+
+    <Button
+        android:id="@+id/btn_screen_2_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Load Screen 2 Clear"/>
+
 </LinearLayout>

@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.vinaysshenoy.routz.R;
+import com.vinaysshenoy.routz.Router;
 import com.vinaysshenoy.routz.Routes;
 import com.vinaysshenoy.routz.Screen;
 
@@ -37,6 +39,19 @@ public class Screen5 extends Screen {
                 getRouter().goBack();
             }
         });
+        contentView.findViewById(R.id.btn_screen_1_reorder).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRouter().load(Routes.SCREEN_1, Router.LOAD_MODE_REORDER);
+            }
+        });
+        contentView.findViewById(R.id.btn_screen_2_clear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRouter().load(Routes.SCREEN_2, Router.LOAD_MODE_CLEAR);
+            }
+        });
+        Toast.makeText(contentView.getContext(), "Stack Count: " + getRouter().getBackstackCount(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

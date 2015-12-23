@@ -254,17 +254,18 @@ public class Router {
             @Override
             public void run() {
 
-                Screen screen;
-                for (int i = 0; i < mScreenStack.size(); i++) {
-
-                    screen = mScreenStack.peek();
-
+                int numPops = 0;
+                for (Screen screen : mScreenStack) {
                     if (screenToShow.getId() == screen.getId()) {
-                        if (i == 0) {
-                            //Special case where the screen to be popped is already on the top
-                            return;
-                        }
-                        displayCurrentTopScreen();
+                        break;
+                    } else {
+                        numPops++;
+                    }
+                }
+
+                for (int i = 0; i < numPops; i++) {
+                    if(i == (numPops - 1)) {
+                        popScreen(true);
                     } else {
                         popScreen(false);
                     }
@@ -306,21 +307,21 @@ public class Router {
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                Screen screen;
-                for (int i = 0; i < mScreenStack.size(); i++) {
 
-                    screen = mScreenStack.peek();
-                    if (screen != null) {
-                        if (screen.getRoute().equals(route)) {
-                            if (i == 0) {
-                                //Special case where the screen to be popped is already on the top
-                                return;
-                            }
+                int numPops = 0;
+                for (Screen screen : mScreenStack) {
+                    if (screen.getRoute().equals(route)) {
+                        break;
+                    } else {
+                        numPops++;
+                    }
+                }
 
-                            displayCurrentTopScreen();
-                        } else {
-                            popScreen(false);
-                        }
+                for (int i = 0; i < numPops; i++) {
+                    if(i == numPops - 1) {
+                        popScreen(true);
+                    } else {
+                        popScreen(false);
                     }
                 }
             }
@@ -337,21 +338,21 @@ public class Router {
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                Screen screen;
-                for (int i = 0; i < mScreenStack.size(); i++) {
 
-                    screen = mScreenStack.peek();
-                    if (screen != null) {
-                        if (screen.getId() == screenId) {
-                            if (i == 0) {
-                                //Special case where the screen to be popped is already on the top
-                                return;
-                            }
+                int numPops = 0;
+                for (Screen screen : mScreenStack) {
+                    if (screen.getId() == screenId) {
+                        break;
+                    } else {
+                        numPops++;
+                    }
+                }
 
-                            displayCurrentTopScreen();
-                        } else {
-                            popScreen(false);
-                        }
+                for(int i = 0; i < numPops; i++) {
+                    if(i == numPops - 1) {
+                        popScreen(true);
+                    } else {
+                        popScreen(false);
                     }
                 }
             }
