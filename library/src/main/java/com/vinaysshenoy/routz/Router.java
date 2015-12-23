@@ -15,8 +15,8 @@ import android.widget.FrameLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Locale;
 
 
@@ -59,7 +59,7 @@ public class Router {
 
     private final Handler mMainHandler;
 
-    private Deque<Screen> mScreenStack;
+    private LinkedList<Screen> mScreenStack;
 
     private Router(@NonNull FrameLayout container, @NonNull RouteCreator routeCreator, @Nullable Bundle savedInstanceState) {
         mContainer = container;
@@ -67,7 +67,7 @@ public class Router {
         mScreenIdGenerator = 0;
         mMainHandler = new Handler(Looper.getMainLooper());
 
-        mScreenStack = new ArrayDeque<>();
+        mScreenStack = new LinkedList<>();
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_STATE)) {
             restoreState(savedInstanceState);
         }
@@ -132,7 +132,58 @@ public class Router {
 
         throwIfNull(route);
 
-        //TODO: Check load modes first
+        Screen screen;
+        switch (loadMode) {
+
+            case LOAD_MODE_REORDER: {
+                screen = findScreenForRoute(route);
+                if (screen != null) {
+                    screen.setParams(params);
+                    moveScreenToTop(screen);
+                } else {
+                    screen = createAndLoadNewScreen(route, params);
+                }
+                break;
+            }
+
+            case LOAD_MODE_CLEAR: {
+                screen = findScreenForRoute(route);
+                if (screen != null) {
+                    screen.setParams(params);
+                    clearStackUpTo(screen);
+                } else {
+                    screen = createAndLoadNewScreen(route, params);
+                }
+                break;
+            }
+
+            case LOAD_MODE_CREATE:
+            default: {
+                screen = createAndLoadNewScreen(route, params);
+                break;
+            }
+        }
+
+        return screen.getId();
+    }
+
+    @Nullable
+    private Screen findScreenForRoute(@NonNull String route) {
+
+        final Iterator<Screen> iterator = mScreenStack.iterator();
+        Screen screen = null;
+        while (iterator.hasNext()) {
+            screen = iterator.next();
+            if (route.equals(screen.getRoute())) {
+                break;
+            }
+        }
+        return screen;
+    }
+
+    @NonNull
+    private Screen createAndLoadNewScreen(@NonNull String route, @Nullable Bundle params) {
+
         final Screen screen = initScreenForRoute(route, params);
 
         runOnMainThread(new Runnable() {
@@ -142,7 +193,7 @@ public class Router {
             }
         });
 
-        return screen.getId();
+        return screen;
     }
 
     /**
@@ -197,6 +248,52 @@ public class Router {
     public int getBackstackCount() {
 
         return mScreenStack.size();
+    }
+
+    private void clearStackUpTo(@NonNull final Screen screenToShow) {
+
+        runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+
+                Screen screen;
+                for (int i = 0; i < mScreenStack.size(); i++) {
+
+                    screen = mScreenStack.peek();
+
+                    if (screenToShow.getId() == screen.getId()) {
+                        if (i == 0) {
+                            //Special case where the screen to be popped is already on the top
+                            return;
+                        }
+                        displayCurrentTopScreen();
+                    } else {
+                        popScreen(false);
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void moveScreenToTop(@NonNull final Screen screenToShow) {
+
+        runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+
+                int screenLocation;
+                for (screenLocation = 0; screenLocation < mScreenStack.size(); screenLocation++) {
+                    if (screenToShow.getId() == mScreenStack.get(screenLocation).getId()) {
+                        break;
+                    }
+                }
+                if (screenLocation < mScreenStack.size()) {
+                    mScreenStack.remove(screenLocation);
+                    pushScreen(screenToShow, true);
+                }
+            }
+        });
     }
 
     /**

@@ -60,6 +60,10 @@ public abstract class Screen {
         mRoute = route;
     }
 
+    /* package */ void setParams(@Nullable Bundle params) {
+        mParams = params;
+    }
+
     public String getRoute() {
         return mRoute;
     }
