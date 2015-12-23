@@ -106,7 +106,6 @@ public class Router {
     }
 
     public void onStart() {
-
         displayCurrentTopScreen();
     }
 
@@ -430,9 +429,11 @@ public class Router {
 
         if (!mScreenStack.isEmpty()) {
             final Screen screen = mScreenStack.peek();
-            screen.setContentView(screen.createView(LayoutInflater.from(mContainer.getContext()), mContainer));
-            mContainer.addView(screen.getContentView());
-            screen.onShown();
+            if(screen.getContentView() == null) {
+                screen.setContentView(screen.createView(LayoutInflater.from(mContainer.getContext()), mContainer));
+                mContainer.addView(screen.getContentView());
+                screen.onShown();
+            }
         }
 
     }

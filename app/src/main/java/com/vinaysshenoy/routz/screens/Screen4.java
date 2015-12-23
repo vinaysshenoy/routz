@@ -14,17 +14,17 @@ import com.vinaysshenoy.routz.Screen;
 /**
  * Created by vinaysshenoy on 21/12/15.
  */
-public class Screen3 extends Screen {
+public class Screen4 extends Screen {
 
     private static final String TAG = "Screen3";
 
-    public Screen3(@Nullable Bundle params) {
+    public Screen4(@Nullable Bundle params) {
         super(params);
     }
 
     @Override
     public View createView(LayoutInflater layoutInflater, ViewGroup container) {
-        return layoutInflater.inflate(R.layout.frame_screen_3, container, false);
+        return layoutInflater.inflate(R.layout.frame_screen_4, container, false);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Screen3 extends Screen {
         contentView.findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRouter().load(Routes.SCREEN_4);
+                getRouter().load(Routes.SCREEN_5);
             }
         });
     }

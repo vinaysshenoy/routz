@@ -11,6 +11,8 @@ import com.vinaysshenoy.routz.screens.EmptyScreen;
 import com.vinaysshenoy.routz.screens.Screen1;
 import com.vinaysshenoy.routz.screens.Screen2;
 import com.vinaysshenoy.routz.screens.Screen3;
+import com.vinaysshenoy.routz.screens.Screen4;
+import com.vinaysshenoy.routz.screens.Screen5;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +43,14 @@ public class MainActivity extends AppCompatActivity {
 
                             case Routes.SCREEN_3: {
                                 return new Screen3(params);
+                            }
+
+                            case Routes.SCREEN_4: {
+                                return new Screen4(params);
+                            }
+
+                            case Routes.SCREEN_5: {
+                                return new Screen5(params);
                             }
 
                             default: {
