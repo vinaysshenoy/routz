@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 savedInstanceState);
 
         if(savedInstanceState == null) {
-            mRouter.load(Routes.SCREEN_1);
+            final Bundle args = new Bundle(1);
+            args.putInt("screen", 1);
+            mRouter.load(Routes.SCREEN_1, args);
         }
     }
 

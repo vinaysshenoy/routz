@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.vinaysshenoy.routz.R;
 import com.vinaysshenoy.routz.Routes;
 import com.vinaysshenoy.routz.Screen;
+import com.vinaysshenoy.routz.Utils;
 
 /**
  * Created by vinaysshenoy on 21/12/15.
@@ -35,10 +36,15 @@ public class Screen1 extends Screen {
         contentView.findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRouter().load(Routes.SCREEN_2, null);
+
+                final Bundle args = new Bundle(2);
+                args.putInt("screen", 2);
+                args.putString("someShit", "SHIT");
+                getRouter().load(Routes.SCREEN_2, args);
             }
         });
         Toast.makeText(contentView.getContext(), "Stack Count: " + getRouter().getBackstackCount(), Toast.LENGTH_SHORT).show();
+        Utils.printBundle(getParams());
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.vinaysshenoy.routz.R;
 import com.vinaysshenoy.routz.Router;
 import com.vinaysshenoy.routz.Routes;
 import com.vinaysshenoy.routz.Screen;
+import com.vinaysshenoy.routz.Utils;
 
 /**
  * Created by vinaysshenoy on 21/12/15.
@@ -52,6 +53,7 @@ public class Screen5 extends Screen {
             }
         });
         Toast.makeText(contentView.getContext(), "Stack Count: " + getRouter().getBackstackCount(), Toast.LENGTH_SHORT).show();
+        Utils.printBundle(getParams());
     }
 
     @Override

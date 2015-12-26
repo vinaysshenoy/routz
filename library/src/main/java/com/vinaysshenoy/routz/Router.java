@@ -93,7 +93,6 @@ public class Router {
 
     public void saveState(@NonNull Bundle savedInstanceState) {
 
-        //TODO: Save the stack state and params as well
         savedInstanceState.putParcelable(KEY_SAVED_STATE, SavedState.from(this));
     }
 
@@ -119,7 +118,7 @@ public class Router {
 
             screenSavedState = screenSavedStates[i];
             //TODO: Save and restore the screen params and screen states
-            final Screen screen = initScreenForRoute(screenSavedState.screenRoute, screenSavedState.screenId, null);
+            final Screen screen = initScreenForRoute(screenSavedState.screenRoute, screenSavedState.screenId, screenSavedState.screenParams);
             final boolean displayScreen = (i == 0);
 
             runOnMainThread(new Runnable() {
@@ -494,20 +493,24 @@ public class Router {
 
         public final String screenRoute;
 
-        private ScreenSavedState(int screenId, String screenRoute) {
+        public final Bundle screenParams;
+
+        private ScreenSavedState(int screenId, String screenRoute, Bundle screenParams) {
             this.screenId = screenId;
             this.screenRoute = screenRoute;
+            this.screenParams = screenParams;
         }
 
         public static ScreenSavedState fromScreen(@NonNull Screen screen) {
-            return new ScreenSavedState(screen.getId(), screen.getRoute());
+            return new ScreenSavedState(screen.getId(), screen.getRoute(), screen.getParams());
         }
 
         public static ScreenSavedState fromParcel(Parcel in) {
 
             final int screenId = in.readInt();
             final String screenRoute = in.readString();
-            return new ScreenSavedState(screenId, screenRoute);
+            final Bundle params = in.readBundle(ScreenSavedState.class.getClassLoader());
+            return new ScreenSavedState(screenId, screenRoute, params);
         }
 
         public static final Creator<ScreenSavedState> CREATOR = new Creator<ScreenSavedState>() {
@@ -531,6 +534,7 @@ public class Router {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(screenId);
             dest.writeString(screenRoute);
+            dest.writeBundle(screenParams);
         }
     }
 
