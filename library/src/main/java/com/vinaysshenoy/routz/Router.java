@@ -106,15 +106,14 @@ public class Router {
     }
 
     public void onStart() {
-        displayCurrentTopScreen();
     }
 
     public void onStop() {
-        hideCurrentTopScreen();
     }
 
     public void onDestroy() {
 
+        hideCurrentTopScreen();
         mScreenStack.clear();
     }
 
