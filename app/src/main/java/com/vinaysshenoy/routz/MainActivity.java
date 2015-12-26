@@ -61,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 },
                 savedInstanceState);
 
-        mRouter.load(Routes.SCREEN_1);
+        if(savedInstanceState == null) {
+            mRouter.load(Routes.SCREEN_1);
+        }
     }
 
     @Override

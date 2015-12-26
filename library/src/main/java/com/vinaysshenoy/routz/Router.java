@@ -87,7 +87,7 @@ public class Router {
         return new Router(container, routeCreator, savedInstanceState);
     }
 
-    /* package */ int getNextScreenId() {
+    private int getNextScreenId() {
         return mScreenIdGenerator++;
     }
 
@@ -102,6 +102,33 @@ public class Router {
         final SavedState savedState = savedInstanceState.getParcelable(KEY_SAVED_STATE);
         if (savedState != null) {
             mScreenIdGenerator = savedState.currentIdNumber;
+            if (savedState.screenSavedStates.length > 0) {
+                restoreScreenStackFromSavedStates(savedState.screenSavedStates);
+            }
+        }
+    }
+
+    private void restoreScreenStackFromSavedStates(@NonNull ScreenSavedState[] screenSavedStates) {
+
+        /* We need to restore the screens back to front since it's a stack and the screen on
+        * top, i.e, the one that was on top, is the one that was on display
+        **/
+
+        ScreenSavedState screenSavedState;
+        for (int i = screenSavedStates.length - 1; i >= 0; i--) {
+
+            screenSavedState = screenSavedStates[i];
+            //TODO: Save and restore the screen params and screen states
+            final Screen screen = initScreenForRoute(screenSavedState.screenRoute, screenSavedState.screenId, null);
+            final boolean displayScreen = (i == 0);
+
+            runOnMainThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    pushScreen(screen, displayScreen);
+                }
+            });
         }
     }
 
@@ -181,7 +208,7 @@ public class Router {
     @NonNull
     private Screen createAndLoadNewScreen(@NonNull String route, @Nullable Bundle params) {
 
-        final Screen screen = initScreenForRoute(route, params);
+        final Screen screen = initScreenForRoute(route, getNextScreenId(), params);
 
         runOnMainThread(new Runnable() {
             @Override
@@ -263,7 +290,7 @@ public class Router {
                 }
 
                 for (int i = 0; i < numPops; i++) {
-                    if(i == (numPops - 1)) {
+                    if (i == (numPops - 1)) {
                         popScreen(true);
                     } else {
                         popScreen(false);
@@ -317,7 +344,7 @@ public class Router {
                 }
 
                 for (int i = 0; i < numPops; i++) {
-                    if(i == numPops - 1) {
+                    if (i == numPops - 1) {
                         popScreen(true);
                     } else {
                         popScreen(false);
@@ -347,8 +374,8 @@ public class Router {
                     }
                 }
 
-                for(int i = 0; i < numPops; i++) {
-                    if(i == numPops - 1) {
+                for (int i = 0; i < numPops; i++) {
+                    if (i == numPops - 1) {
                         popScreen(true);
                     } else {
                         popScreen(false);
@@ -358,13 +385,14 @@ public class Router {
         });
     }
 
-    private Screen initScreenForRoute(@NonNull String route, @Nullable Bundle params) {
+    private Screen initScreenForRoute(@NonNull String route, int screenId, @Nullable Bundle params) {
 
         final Screen screen = mRouteCreator.instantiateScreenForRoute(route, params);
         if (screen == null) {
             throw new IllegalArgumentException(String.format(Locale.US, "No screen defined for route: {%s}", route));
         }
         screen.setRouter(this);
+        screen.setId(screenId);
         screen.setRoute(route);
         return screen;
     }
@@ -429,7 +457,7 @@ public class Router {
 
         if (!mScreenStack.isEmpty()) {
             final Screen screen = mScreenStack.peek();
-            if(screen.getContentView() == null) {
+            if (screen.getContentView() == null) {
                 screen.setContentView(screen.createView(LayoutInflater.from(mContainer.getContext()), mContainer));
                 mContainer.addView(screen.getContentView());
                 screen.onShown();
@@ -460,24 +488,79 @@ public class Router {
         }
     }
 
+    private static final class ScreenSavedState implements Parcelable {
+
+        public final int screenId;
+
+        public final String screenRoute;
+
+        private ScreenSavedState(int screenId, String screenRoute) {
+            this.screenId = screenId;
+            this.screenRoute = screenRoute;
+        }
+
+        public static ScreenSavedState fromScreen(@NonNull Screen screen) {
+            return new ScreenSavedState(screen.getId(), screen.getRoute());
+        }
+
+        public static ScreenSavedState fromParcel(Parcel in) {
+
+            final int screenId = in.readInt();
+            final String screenRoute = in.readString();
+            return new ScreenSavedState(screenId, screenRoute);
+        }
+
+        public static final Creator<ScreenSavedState> CREATOR = new Creator<ScreenSavedState>() {
+            @Override
+            public ScreenSavedState createFromParcel(Parcel in) {
+                return ScreenSavedState.fromParcel(in);
+            }
+
+            @Override
+            public ScreenSavedState[] newArray(int size) {
+                return new ScreenSavedState[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(screenId);
+            dest.writeString(screenRoute);
+        }
+    }
+
     private static final class SavedState implements Parcelable {
 
         public final int currentIdNumber;
 
-        private SavedState(int currentIdNumber) {
+        public final ScreenSavedState[] screenSavedStates;
+
+        private SavedState(int currentIdNumber, ScreenSavedState[] screenSavedStates) {
             this.currentIdNumber = currentIdNumber;
+            this.screenSavedStates = screenSavedStates;
         }
 
-        protected static SavedState from(Router router) {
+        private static SavedState from(@NonNull Router router) {
 
             final int currentIdNumber = router.mScreenIdGenerator;
-            return new SavedState(currentIdNumber);
+            final ScreenSavedState[] screenSavedStates = new ScreenSavedState[router.mScreenStack.size()];
+            for (int i = 0; i < router.mScreenStack.size(); i++) {
+                screenSavedStates[i] = ScreenSavedState.fromScreen(router.mScreenStack.get(i));
+            }
+            return new SavedState(currentIdNumber, screenSavedStates);
         }
 
-        protected static SavedState from(Parcel in) {
+        private static SavedState from(Parcel in) {
 
-            final int currentIdNumber = in.readInt();
-            return new SavedState(currentIdNumber);
+            return new SavedState(
+                    in.readInt(),
+                    in.createTypedArray(ScreenSavedState.CREATOR)
+            );
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
@@ -500,6 +583,7 @@ public class Router {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(currentIdNumber);
+            dest.writeTypedArray(screenSavedStates, flags);
         }
     }
 

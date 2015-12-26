@@ -30,7 +30,10 @@ public abstract class Screen {
 
     /* package */ void setRouter(@NonNull Router router) {
         mRouter = router;
-        mId = router.getNextScreenId();
+    }
+
+    /* package */ void setId(int id) {
+        mId = id;
     }
 
     public abstract View createView(LayoutInflater layoutInflater, ViewGroup container);
